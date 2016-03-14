@@ -48,24 +48,24 @@ public class AttachmentInformation {
    * 
    * @return
    */
-  public String getTargetFileName() {
-    String ext = "";
-    int i = name.lastIndexOf('.');
-    if (i > 0) {
-      ext = "." + name.substring(i + 1);
-    }
-    String res = barcode + "_" + name.replace(ext, "") + "_user_" + user;
-    if (secondary_name != null && !secondary_name.isEmpty())
-      res += "_secname_" + secondary_name;
-    res = res.replace(" ", "_").replace("up_", "") + ext;
-    try {
-      res = URLEncoder.encode(res, "UTF-8").replace("+", "%20"); // URL Encoder replaces whitespaces
-                                                                 // with '+' ...
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return res;
-  }
+//  public String getTargetFileName() {
+//    String ext = "";
+//    int i = name.lastIndexOf('.');
+//    if (i > 0) {
+//      ext = "." + name.substring(i + 1);
+//    }
+//    String res = barcode + "_" + name.replace(ext, "") + "_user_" + user;
+//    if (secondary_name != null && !secondary_name.isEmpty())
+//      res += "_secname_" + secondary_name;
+//    res = res.replace(" ", "_").replace("up_", "") + ext;
+//    try {
+//      res = URLEncoder.encode(res, "UTF-8").replace("+", "%20"); // URL Encoder replaces whitespaces
+//                                                                 // with '+' ...
+//    } catch (UnsupportedEncodingException e) {
+//      e.printStackTrace();
+//    }
+//    return res;
+//  }
 
   /**
    * Returns a folder name (excluding slash suffix) based on a timestamp for this attachment file
@@ -78,9 +78,10 @@ public class AttachmentInformation {
   }
 
   public String getFileName() {
-    String res = name.replaceFirst("up_", "");
+//    String res = name.replaceFirst("up_", "");
+    String res = null;
     try {
-      res = URLEncoder.encode(res, "UTF-8").replace("+", "%20"); // URL Encoder replaces whitespaces                                                                 // with '+' ...
+      res = URLEncoder.encode(name, "UTF-8").replace("+", "%20"); // URL Encoder replaces whitespaces                                                                 // with '+' ...
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }

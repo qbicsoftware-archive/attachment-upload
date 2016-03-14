@@ -175,9 +175,9 @@ public class UploadsPanel extends VerticalLayout {
 
   private void initUpload(int maxSize) {
     upload =
-        new UploadComponent("Select File", "Add File", tmpFolder, "up_", maxSize * 1000000);
+        new UploadComponent("Select File", "Add File", tmpFolder, userID, maxSize * 1000000);
     if (!new File(tmpFolder).exists()) {
-      logger.error("tmp folder " + tmpFolder + " does not exist! Set it in properties file.");
+      logger.error("tmp folder " + tmpFolder + " does not exist! Create it or set another folder in properties file.");
     }
     FinishedListener uploadFinListener = new FinishedListener() {
       /**

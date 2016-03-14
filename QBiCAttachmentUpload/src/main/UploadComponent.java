@@ -6,6 +6,12 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Timestamp;
+import java.util.Date;
+
+import org.apache.commons.io.FilenameUtils;
 
 import logging.Log4j2Logger;
 
@@ -30,7 +36,7 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
 
   protected Upload upload;
   protected String directory;
-  protected String targetPrefix;
+  protected String user;
   protected File file;
   protected long maxSize; // In bytes. 100Kb = 100000
   protected ProgressBar progressIndicator; // May be null
@@ -43,13 +49,14 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
   private boolean success;
 
   public UploadComponent(String fieldCaption, String buttonCaption, String directoryParam,
-      String targetPrefix, int maxSize) {
+      String user, int maxSize) {
     upload = new Upload(fieldCaption, null);
+    this.user = user;
     this.addComponent(upload);
     this.maxSize = maxSize;
     upload.setReceiver(this);
     this.directory = directoryParam;
-    this.targetPrefix = targetPrefix;
+    // this.targetPrefix = targetPrefix;
     upload.setButtonCaption(buttonCaption);
     upload.addSucceededListener(this);
     upload.addFailedListener(this);
@@ -73,7 +80,7 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
         upload.interruptUpload();
       }
     });
-    
+
     cancelProcessing.setStyleName("small");
     processingLayout.addComponent(cancelProcessing);
   }
@@ -81,8 +88,10 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
   @Override
   public OutputStream receiveUpload(String filename, String MIMEType) {
     FileOutputStream fos = null;
-    file = new File(directory, targetPrefix + filename);
-
+    Date date = new java.util.Date();
+    String timeStamp =
+        new Timestamp(date.getTime()).toString().split(" ")[1].replace(":", "").replace(".", "");
+    file = new File(directory, user + "_" + timeStamp + "_" + FilenameUtils.getName(filename));
     try {
       fos = new FileOutputStream(file);
     } catch (final java.io.FileNotFoundException e) {
