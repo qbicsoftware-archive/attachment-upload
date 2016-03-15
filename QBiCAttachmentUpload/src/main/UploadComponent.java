@@ -90,7 +90,6 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
   public OutputStream receiveUpload(String filename, String MIMEType) {
     FileOutputStream fos = null;
     Date date = new java.util.Date();
-    // String S = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(myTimestamp);
     String timeStamp = new SimpleDateFormat("HHmmssS").format(new Timestamp(date.getTime()));
     file = new File(directory, user + "_" + timeStamp + "_" + FilenameUtils.getName(filename));
     try {
