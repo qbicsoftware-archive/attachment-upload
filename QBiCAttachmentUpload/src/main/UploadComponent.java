@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
@@ -89,8 +90,8 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
   public OutputStream receiveUpload(String filename, String MIMEType) {
     FileOutputStream fos = null;
     Date date = new java.util.Date();
-    String timeStamp =
-        new Timestamp(date.getTime()).toString().split(" ")[1].replace(":", "").replace(".", "");
+    // String S = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(myTimestamp);
+    String timeStamp = new SimpleDateFormat("HHmmssS").format(new Timestamp(date.getTime()));
     file = new File(directory, user + "_" + timeStamp + "_" + FilenameUtils.getName(filename));
     try {
       fos = new FileOutputStream(file);
