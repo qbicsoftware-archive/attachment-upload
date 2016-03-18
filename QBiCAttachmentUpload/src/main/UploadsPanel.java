@@ -192,7 +192,6 @@ public class UploadsPanel extends VerticalLayout {
 
       @Override
       public void textChange(TextChangeEvent event) {
-        System.out.println(event.getText());
         upload.getUploadComponent().setEnabled(!event.getText().isEmpty());
       }
     });
@@ -283,7 +282,6 @@ public class UploadsPanel extends VerticalLayout {
     String experiment = project + "_INFO";
     if (!openbis.sampleExists(sample)) {
       if (!openbis.expExists(space, project, experiment)) {
-        System.out.println(space + project + experiment + userID);
         openbisCreator.registerExperiment(space, project, "Q_PROJECT_DETAILS", experiment,
             new HashMap<String, String>(), userID);
         while (!openbis.expExists(space, project, experiment))
