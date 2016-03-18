@@ -17,7 +17,10 @@ import logging.Log4j2Logger;
 import model.AttachmentConfig;
 import model.AttachmentInformation;
 
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -69,6 +72,9 @@ public class UploadsPanel extends VerticalLayout {
     attachments = new HashMap<Object, AttachmentInformation>();
 
     fileInfo = new StandardTextField("Description");
+    fileInfo.setRequired(true);
+    fileInfo.setImmediate(true);
+    fileInfo.setTextChangeEventMode(TextChangeEventMode.EAGER);
     addComponent(fileInfo);
 
     uploadType = new ComboBox("Attach to...");
@@ -118,7 +124,8 @@ public class UploadsPanel extends VerticalLayout {
     String user = a.getUser();
     String info = a.getInfo().replace("\n", " ");
     String barcode = a.getBarcode();
-    return "user=" + user + "\n" + "info=" + info + "\n" + "barcode=" + barcode;
+    return "user=" + user + "\n" + "info=" + info + "\n" + "barcode=" + barcode + "\n" + "type="
+        + uploadType.getValue().toString();
   }
 
   private void initTable() {
@@ -174,11 +181,22 @@ public class UploadsPanel extends VerticalLayout {
   }
 
   private void initUpload(int maxSize) {
-    upload =
-        new UploadComponent("Select File", "Add File", tmpFolder, userID, maxSize * 1000000);
+    upload = new UploadComponent("Select File", "Add File", tmpFolder, userID, maxSize * 1000000);
     if (!new File(tmpFolder).exists()) {
-      logger.error("tmp folder " + tmpFolder + " does not exist! Create it or set another folder in properties file.");
+      logger.error("tmp folder " + tmpFolder
+          + " does not exist! Create it or set another folder in properties file.");
     }
+
+    upload.getUploadComponent().setEnabled(false);
+    fileInfo.addTextChangeListener(new TextChangeListener() {
+
+      @Override
+      public void textChange(TextChangeEvent event) {
+        System.out.println(event.getText());
+        upload.getUploadComponent().setEnabled(!event.getText().isEmpty());
+      }
+    });
+
     FinishedListener uploadFinListener = new FinishedListener() {
       /**
        * 
@@ -236,6 +254,7 @@ public class UploadsPanel extends VerticalLayout {
             toUpload.getContainerProperty(itemId, "Context").setValue(type);
             toUpload.getContainerProperty(itemId, "Remove").setValue(delete);
             tableChanged();
+            upload.getUploadComponent().setEnabled(false);
           }
         }
       }

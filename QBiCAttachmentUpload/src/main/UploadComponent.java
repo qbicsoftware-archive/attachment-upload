@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -88,16 +86,24 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
 
   @Override
   public OutputStream receiveUpload(String filename, String MIMEType) {
+    filename = FilenameUtils.getName(filename);
+    if (filename.isEmpty()) {
+      upload.interruptUpload();
+    }
     FileOutputStream fos = null;
     Date date = new java.util.Date();
     String timeStamp = new SimpleDateFormat("HHmmssS").format(new Timestamp(date.getTime()));
-    file = new File(directory, user + "_" + timeStamp + "_" + FilenameUtils.getName(filename));
+    file = new File(directory, user + "_" + timeStamp + "_" + filename);
     try {
       fos = new FileOutputStream(file);
     } catch (final java.io.FileNotFoundException e) {
       throw new RuntimeException(e);
     }
     return fos; // Return the output stream to write to
+  }
+
+  public Upload getUploadComponent() {
+    return upload;
   }
 
   @Override
@@ -121,7 +127,10 @@ public class UploadComponent extends VerticalLayout implements Upload.SucceededL
   @Override
   public void uploadFailed(FailedEvent event) {
     processingLayout.setVisible(false);
-    if (contentLength != null && maxSize < contentLength) {
+    if (event.getFilename().isEmpty()) {
+      showNotification("No file selected", "Please select a file before adding it.");
+      logger.info("Upload was cancelled due to no file selected.");
+    } else if (contentLength != null && maxSize < contentLength) {
       showNotification("File too large", "Your file is " + contentLength / 1000
           + "Kb long. Maximum file size is " + maxSize / 1000 + "Kb");
       logger.info("Upload was cancelled due to file exceeding size limit.");
